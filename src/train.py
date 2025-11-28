@@ -1,8 +1,8 @@
 from ultralytics import YOLO
 
-model = YOLO("../cigarette-detection-using-yolov12-and-sahi/models/yolo12m.pt")
+model = YOLO("models/yolo12s.pt")
 
-results = model.train(data="/mnt/Data/Long-Data/cigarette-detection-using-yolov12-and-sahi/data/data.yaml", 
+results = model.train(data="data/data.yaml", 
                       epochs=500, 
                       imgsz=640, 
                       patience = 100,
@@ -10,5 +10,4 @@ results = model.train(data="/mnt/Data/Long-Data/cigarette-detection-using-yolov1
                       cos_lr=True
                      )
 
-model.save('cigarv12.pt')
-model.export(format="onnx")
+model.save('models/cigarv12.pt')

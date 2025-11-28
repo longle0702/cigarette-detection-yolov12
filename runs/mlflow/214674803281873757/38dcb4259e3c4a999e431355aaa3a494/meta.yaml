@@ -1,0 +1,15 @@
+artifact_uri: /mnt/Data/Long-Data/cigarette-detection-using-yolov12-and-sahi/runs/mlflow/214674803281873757/38dcb4259e3c4a999e431355aaa3a494/artifacts
+end_time: 1763195024063
+entry_point_name: ''
+experiment_id: '214674803281873757'
+lifecycle_stage: active
+run_id: 38dcb4259e3c4a999e431355aaa3a494
+run_name: train
+run_uuid: 38dcb4259e3c4a999e431355aaa3a494
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763138091758
+status: 3
+tags: []
+user_id: long
