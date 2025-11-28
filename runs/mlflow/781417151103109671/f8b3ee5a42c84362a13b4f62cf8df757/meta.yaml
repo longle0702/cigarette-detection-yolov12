@@ -1,0 +1,15 @@
+artifact_uri: /mnt/Data/Long-Data/cigarette-detection-yolov12/runs/mlflow/781417151103109671/f8b3ee5a42c84362a13b4f62cf8df757/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '781417151103109671'
+lifecycle_stage: active
+run_id: f8b3ee5a42c84362a13b4f62cf8df757
+run_name: train
+run_uuid: f8b3ee5a42c84362a13b4f62cf8df757
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1764328974832
+status: 1
+tags: []
+user_id: long

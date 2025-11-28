@@ -1,6 +1,6 @@
-artifact_location: /mnt/Data/Long-Data/cigarette-detection-using-yolov12-and-sahi/runs/mlflow/0
-creation_time: 1763138090460
+artifact_location: /mnt/Data/Long-Data/cigarette-detection-yolov12/runs/mlflow/0
+creation_time: 1764328974494
 experiment_id: '0'
-last_update_time: 1763138090460
+last_update_time: 1764328974494
 lifecycle_stage: active
 name: Default

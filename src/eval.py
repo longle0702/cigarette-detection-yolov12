@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 
 model = YOLO('models/best.pt')
-results = model.val(data='data/data.yaml', split='test', plots=True)
+results = model.val(data='data/data.yaml', split='test', plots=True, imgsz=640)
 
 latency_ms = results.speed['inference']
 print(f"Average Inference Latency: {latency_ms:.2f} ms")
