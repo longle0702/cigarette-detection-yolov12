@@ -11,5 +11,3 @@ results = model.train(
     cos_lr=True,
     plots=True
 )
-
-model.save('models/cigarv12.pt')
