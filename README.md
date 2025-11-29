@@ -1,6 +1,6 @@
 # 🚬 Cigarette Detection – YOLOv12
 
-This project is an upgrade of my original computer vision assignment. Now powered by **YOLOv12**, it delivers real-time cigarette detection with smooth performance and strong accuracy.
+This project is an upgrade of my original computer vision assignment, using **YOLOv12**.
 
 ## 📁 Project Structure
 
