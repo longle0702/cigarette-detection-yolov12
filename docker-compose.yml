@@ -1,0 +1,15 @@
+services:
+  app:
+    platform: linux/amd64
+    build: .
+    image: cigarette-detection-yolo
+    container_name: cigarette-detection-app
+    volumes:
+      - .:/usr/src/app
+    working_dir: /usr/src/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - HOME=/usr/src/app
+      - YOLO_CONFIG_DIR=/usr/src/app/.config
+      - TORCHINDUCTOR_CACHE_DIR=/usr/src/app/.cache
+    user: "${UID:-1000}:${GID:-1000}"

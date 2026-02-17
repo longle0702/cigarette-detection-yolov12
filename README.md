@@ -1,16 +1,55 @@
 # 🚬 Cigarette Detection – YOLOv12
 
-This project is an upgrade of my original computer vision assignment, using **YOLOv12**.
+This project is an upgrade of my original computer vision assignment, using **YOLOv12** for real-time cigarette detection.
 
 ## 📁 Project Structure
 
 ```
 cigarette-detection-yolov12/
-│       
-├── models/        
-├── runs/          
-└── src/           
+│
+├── src/                    # Source code
+│   ├── main.py            # Main inference script
+│   ├── train.py           # Training script
+│   └── eval.py            # Evaluation script
+│
+├── models/                 # Trained models
+│   └── best.pt            # Best performing model
+│
+├── runs/                   # Training and detection runs
+│   ├── detect/            # Detection outputs
+│   └── mlflow/            # MLflow tracking data
+│
+├── Dockerfile             # Docker configuration
+├── docker-compose.yml     # Docker Compose configuration
+├── image.png             # Sample image
+└── README.md             # This file
 ```
+
+## 🐳 Docker Setup
+
+This project uses Docker for consistent development and deployment environments.
+
+### Prerequisites
+- Docker
+- Docker Compose
+
+### Building and Running
+
+1. **Build the Docker image:**
+   ```bash
+   docker-compose build
+   ```
+
+2. **Run inference:**
+   ```bash
+   docker-compose run app python src/main.py
+   ```
+
+### Docker Configuration
+- **Base Image:** `ultralytics/ultralytics:latest-cpu`
+- **Platform:** `linux/amd64`
+- **Working Directory:** `/usr/src/app`
+- **Volume Mounting:** Local directory is mapped to container for seamless development
 
 ## 🚀 Performance
 
