@@ -8,11 +8,14 @@ from typing import Optional
 import cv2
 import numpy as np
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, status
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 # from fastapi.responses import JSONResponse
 # from PIL import Image
 from ultralytics import YOLO
-from schemas import (
+from src.schemas import (
+    BoundingBox,
     DetectionResponse,
     HealthResponse,
     ModelInfoResponse,
@@ -24,9 +27,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger("cigarette-api")
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.dirname(BASE_DIR)
-MODEL_PATH = os.path.join(ROOT_DIR, "models", "best.pt")
+base_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.dirname(base_dir)
+model_path = os.path.join(root_dir, "models", "best.pt")
+static_dir = os.path.join(base_dir, "static")
 
 _model: Optional[YOLO] = None
 
@@ -41,8 +45,8 @@ def get_model():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global _model
-    logger.info("Loading YOLOv12 model from %s …", MODEL_PATH)
-    _model = YOLO(MODEL_PATH)
+    logger.info("Loading YOLOv12 model from %s …", model_path)
+    _model = YOLO(model_path)
     logger.info("Model loaded successfully.")
     yield
     logger.info("Shutting down API.")
@@ -66,6 +70,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
 ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp", "image/bmp"}
 MAX_IMAGE_BYTES = 20 * 1024 * 1024
 
@@ -80,10 +86,15 @@ def _load_image(raw):
         )
     return img
 
-
 def _encode_image_b64(img):
     _, buf = cv2.imencode(".png", img)
     return base64.b64encode(buf.tobytes()).decode("utf-8")
+
+@app.get("/", include_in_schema=False, response_class=HTMLResponse)
+async def root():
+    index_path = os.path.join(static_dir, "index.html")
+    with open(index_path, "r", encoding="utf-8") as f:
+        return HTMLResponse(content=f.read())
 
 @app.get("/health", response_model=HealthResponse, tags=["Monitoring"])
 async def health_check():
@@ -96,11 +107,10 @@ async def health_check():
 async def model_info():
     model = get_model()
     return ModelInfoResponse(
-        model_path=MODEL_PATH,
+        model_path=model_path,
         task=model.task,
         names=model.names,
     )
-
 
 @app.post(
     "/detect",
@@ -145,24 +155,24 @@ async def detect(
     inference_ms = (time.perf_counter() - t0) * 1000
 
     result = results[0]
-    detections = []
+    detections: list[BoundingBox] = []
     for box in result.boxes:
-        xyxy = box.xyxy[0].tolist()         
-        xywhn = box.xywhn[0].tolist()        
+        xyxy = box.xyxy[0].tolist()
+        xywhn = box.xywhn[0].tolist()
         class_id = int(box.cls[0])
         label = model.names.get(class_id, str(class_id))
         confidence = float(box.conf[0])
         detections.append(
-            {
-                "label": label,
-                "class_id": class_id,
-                "confidence": round(confidence, 4),
-                "bbox_xyxy": [round(v, 2) for v in xyxy],
-                "bbox_xywhn": [round(v, 6) for v in xywhn],
-            }
+            BoundingBox(
+                label=label,
+                class_id=class_id,
+                confidence=round(confidence, 4),
+                bbox_xyxy=[round(v, 2) for v in xyxy],
+                bbox_xywhn=[round(v, 6) for v in xywhn],
+            )
         )
 
-    detections.sort(key=lambda d: d["confidence"], reverse=True)
+    detections.sort(key=lambda d: d.confidence, reverse=True)
     annotated_b64: Optional[str] = None
     if return_image:
         annotated = result.plot()         

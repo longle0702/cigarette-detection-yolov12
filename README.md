@@ -1,6 +1,6 @@
 # 🚬 Cigarette Detection – YOLOv12
 
-This project is an upgrade of my original computer vision assignment, using **YOLOv12** for real-time cigarette detection. It now includes a **FastAPI inference REST API** for easy integration.
+This project is an upgrade of my original computer vision assignment, using **YOLOv12** for real-time cigarette detection. It includes a **FastAPI inference REST API** and a **browser-based live demo UI** for easy interaction and integration.
 
 ## 📁 Project Structure
 
@@ -8,11 +8,13 @@ This project is an upgrade of my original computer vision assignment, using **YO
 cigarette-detection-yolov12/
 │
 ├── src/                   # Source code
-│   ├── api.py             # FastAPI inference API  
-│   ├── schemas.py         # Pydantic request/response models 
+│   ├── api.py             # FastAPI inference API
+│   ├── schemas.py         # Pydantic request/response models
 │   ├── main.py            # Standalone inference script
 │   ├── train.py           # Training script
-│   └── eval.py            # Evaluation script
+│   ├── eval.py            # Evaluation script
+│   └── static/
+│       └── index.html     # Browser-based live demo UI
 │
 ├── models/                # Trained models
 │   └── best.pt            # Best performing model
@@ -21,34 +23,48 @@ cigarette-detection-yolov12/
 │   ├── detect/            # Detection outputs
 │   └── mlflow/            # MLflow tracking data
 │
-├── requirements.txt       # Python dependencies 
+├── requirements.txt       # Python dependencies
 ├── Dockerfile             # Docker configuration
 ├── docker-compose.yml     # Docker Compose configuration
 ├── image.png              # Sample image
 └── README.md              # This file
 ```
 
+## 🖥️ Live Demo UI
+
+A fully interactive browser-based demo is available at **`http://localhost:8000`**.
+
+**Features:**
+
+- 🖼️ Drag & drop image upload with instant preview
+- 🎛️ Live sliders for Confidence, IoU, and Image Size parameters
+- 🔀 Toggle to include/exclude annotated bounding-box image in response
+- 📊 Stats bar showing detection count, inference time, and image dimensions
+- 🖼️ Annotated result image with bounding boxes drawn
+- 📋 Detections table with label, confidence bar, and bbox coordinates
+
 ## 🌐 FastAPI Inference API
 
 ### Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/health` | Liveness probe – model readiness |
-| `GET` | `/model/info` | Model metadata (task, class names) |
-| `POST` | `/detect` | Run cigarette detection on an image |
-| `GET` | `/docs` | Interactive Swagger UI |
-| `GET` | `/redoc` | ReDoc API documentation |
+| Method | Path          | Description                         |
+| ------ | ------------- | ----------------------------------- |
+| `GET`  | `/`           | Browser live demo UI                |
+| `GET`  | `/health`     | Liveness probe – model readiness    |
+| `GET`  | `/model/info` | Model metadata (task, class names)  |
+| `POST` | `/detect`     | Run cigarette detection on an image |
+| `GET`  | `/docs`       | Interactive Swagger UI              |
+| `GET`  | `/redoc`      | ReDoc API documentation             |
 
 ### `/detect` Parameters
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `file` | file | — | Image (JPEG / PNG / WebP / BMP, ≤ 20 MB) |
-| `conf` | float | `0.25` | Confidence threshold (0.01 – 1.0) |
-| `iou` | float | `0.45` | NMS IoU threshold (0.01 – 1.0) |
-| `imgsz` | int | `640` | Inference image size in pixels (32 – 1920) |
-| `return_image` | bool | `false` | Return annotated image as base64 PNG |
+| Field          | Type  | Default | Description                                |
+| -------------- | ----- | ------- | ------------------------------------------ |
+| `file`         | file  | —       | Image (JPEG / PNG / WebP / BMP, ≤ 20 MB)   |
+| `conf`         | float | `0.25`  | Confidence threshold (0.01 – 1.0)          |
+| `iou`          | float | `0.45`  | NMS IoU threshold (0.01 – 1.0)             |
+| `imgsz`        | int   | `640`   | Inference image size in pixels (32 – 1920) |
+| `return_image` | bool  | `false` | Return annotated image as base64 PNG       |
 
 ### Example Response
 
@@ -90,21 +106,29 @@ curl -X POST http://localhost:8000/detect \
 ## 🐳 Docker Setup
 
 ### Prerequisites
+
 - Docker
 - Docker Compose
 
 ### Running the API
 
 ```bash
-# Build and start the FastAPI server on port 8000
+# Build and start the server on port 8000
 docker compose up --build
-
-# The API will be available at:
-# http://localhost:8000
-# http://localhost:8000/docs  ← Swagger UI
 ```
 
+Once running, the following URLs are available:
+
+| URL                                | Description            |
+| ---------------------------------- | ---------------------- |
+| `http://localhost:8000`            | 🖥️ Live demo UI        |
+| `http://localhost:8000/docs`       | 📄 Swagger UI          |
+| `http://localhost:8000/redoc`      | 📄 ReDoc documentation |
+| `http://localhost:8000/health`     | ❤️ Health check        |
+| `http://localhost:8000/model/info` | ℹ️ Model info          |
+
 ### Docker Configuration
+
 - **Base Image:** `ultralytics/ultralytics:latest-cpu`
 - **Platform:** `linux/amd64`
 - **Port:** `8000`

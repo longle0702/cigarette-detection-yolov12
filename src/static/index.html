@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🚬 Cigarette Detection — Live Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #0d0f14;
+        --surface: #13161e;
+        --card: #1a1e2a;
+        --border: #252b3b;
+        --accent: #f97316;
+        --accent2: #fb923c;
+        --text: #e2e8f0;
+        --muted: #64748b;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --radius: 14px;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ── HEADER ── */
+      header {
+        padding: 1.4rem 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--border);
+        background: rgba(19, 22, 30, 0.85);
+        backdrop-filter: blur(12px);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 700;
+        font-size: 1.15rem;
+        letter-spacing: -0.3px;
+      }
+      .logo-icon {
+        width: 36px;
+        height: 36px;
+        background: var(--accent);
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+      }
+      .badge {
+        font-size: 0.68rem;
+        font-weight: 600;
+        padding: 0.22rem 0.6rem;
+        border-radius: 999px;
+        background: rgba(249, 115, 22, 0.15);
+        color: var(--accent);
+        border: 1px solid rgba(249, 115, 22, 0.3);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .header-links {
+        display: flex;
+        gap: 1.2rem;
+      }
+      .header-links a {
+        color: var(--muted);
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: color 0.2s;
+        font-weight: 500;
+      }
+      .header-links a:hover {
+        color: var(--text);
+      }
+
+      /* ── HERO ── */
+      .hero {
+        text-align: center;
+        padding: 4rem 1.5rem 2.5rem;
+      }
+      .hero h1 {
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        font-weight: 700;
+        color: var(--text);
+        line-height: 1.15;
+        margin-bottom: 0.7rem;
+      }
+      .hero p {
+        color: var(--muted);
+        font-size: 1.05rem;
+        max-width: 520px;
+        margin: 0 auto;
+        line-height: 1.7;
+      }
+
+      /* ── MAIN GRID ── */
+      .container {
+        max-width: 1160px;
+        margin: 0 auto;
+        padding: 0 1.5rem 4rem;
+        display: grid;
+        grid-template-columns: 380px 1fr;
+        gap: 1.6rem;
+        align-items: start;
+      }
+      @media (max-width: 820px) {
+        .container {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── CARD ── */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+      }
+      .card-title {
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 1.1rem;
+      }
+
+      /* ── DROPZONE ── */
+      #dropzone {
+        border: 2px dashed var(--border);
+        border-radius: var(--radius);
+        padding: 2.5rem 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition:
+          border-color 0.25s,
+          background 0.25s;
+        position: relative;
+      }
+      #dropzone.drag-over {
+        border-color: var(--accent);
+        background: rgba(249, 115, 22, 0.05);
+      }
+      #dropzone input {
+        display: none;
+      }
+      .drop-icon {
+        font-size: 2.2rem;
+        margin-bottom: 0.6rem;
+      }
+      .drop-text {
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+      .drop-text span {
+        color: var(--accent);
+        font-weight: 600;
+        cursor: pointer;
+      }
+      #preview-wrap {
+        margin-top: 1rem;
+        display: none;
+      }
+      #preview-wrap img {
+        width: 100%;
+        border-radius: 9px;
+        object-fit: contain;
+        max-height: 260px;
+        border: 1px solid var(--border);
+      }
+      .preview-name {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-top: 0.4rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* ── PARAMS ── */
+      .params {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+        margin-bottom: 1.2rem;
+      }
+      .param-row label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.83rem;
+        font-weight: 500;
+        margin-bottom: 0.45rem;
+        color: var(--text);
+      }
+      .param-row label span {
+        color: var(--accent);
+        font-weight: 600;
+      }
+      input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 5px;
+        border-radius: 99px;
+        background: var(--border);
+        outline: none;
+        cursor: pointer;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+        transition: box-shadow 0.2s;
+      }
+      input[type="range"]::-webkit-slider-thumb:hover {
+        box-shadow: 0 0 0 6px rgba(249, 115, 22, 0.25);
+      }
+
+      /* toggle */
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.83rem;
+        font-weight: 500;
+      }
+      .toggle-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .toggle-label-sub {
+        color: var(--muted);
+        font-size: 0.76rem;
+        margin-top: 0.1rem;
+      }
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 42px;
+        height: 24px;
+      }
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider-t {
+        position: absolute;
+        inset: 0;
+        background: var(--border);
+        border-radius: 99px;
+        transition: 0.3s;
+        cursor: pointer;
+      }
+      .slider-t::before {
+        content: "";
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        left: 3px;
+        bottom: 3px;
+        background: white;
+        border-radius: 50%;
+        transition: 0.3s;
+      }
+      .switch input:checked + .slider-t {
+        background: var(--accent);
+      }
+      .switch input:checked + .slider-t::before {
+        transform: translateX(18px);
+      }
+
+      /* ── BUTTON ── */
+      #run-btn {
+        width: 100%;
+        padding: 0.85rem;
+        border-radius: var(--radius);
+        border: none;
+        background: var(--accent);
+        color: #fff;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        letter-spacing: 0.02em;
+        transition:
+          opacity 0.2s,
+          transform 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+      #run-btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
+      #run-btn:active {
+        transform: scale(0.98);
+      }
+      #run-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      /* spinner */
+      .spinner {
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        display: none;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ── RIGHT PANEL ── */
+      .right-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 1.4rem;
+      }
+
+      /* placeholder */
+      .placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 320px;
+        color: var(--muted);
+        gap: 0.7rem;
+        font-size: 0.9rem;
+      }
+      .placeholder-icon {
+        font-size: 3rem;
+        opacity: 0.35;
+      }
+
+      /* stats bar */
+      .stats-bar {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+      .stat {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1rem 1.2rem;
+        text-align: center;
+      }
+      .stat-val {
+        font-size: 1.8rem;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--text);
+      }
+      .stat-lbl {
+        font-size: 0.72rem;
+        color: var(--muted);
+        margin-top: 0.3rem;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+      }
+
+      /* annotated image */
+      #result-img {
+        width: 100%;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        display: none;
+      }
+
+      /* detections table */
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.83rem;
+      }
+      thead th {
+        text-align: left;
+        padding: 0.6rem 0.8rem;
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        border-bottom: 1px solid var(--border);
+      }
+      tbody tr {
+        transition: background 0.15s;
+      }
+      tbody tr:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      tbody td {
+        padding: 0.65rem 0.8rem;
+        border-bottom: 1px solid rgba(37, 43, 59, 0.6);
+        vertical-align: middle;
+      }
+      .conf-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .conf-track {
+        flex: 1;
+        height: 5px;
+        background: var(--border);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .conf-fill {
+        height: 100%;
+        background: var(--accent);
+        border-radius: 99px;
+      }
+      .pill {
+        display: inline-block;
+        padding: 0.2rem 0.55rem;
+        border-radius: 99px;
+        background: rgba(249, 115, 22, 0.12);
+        color: var(--accent);
+        font-size: 0.72rem;
+        font-weight: 600;
+      }
+
+      /* error */
+      .error-box {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: var(--radius);
+        padding: 1rem 1.2rem;
+        color: var(--danger);
+        font-size: 0.85rem;
+        display: none;
+      }
+
+      /* footer */
+      footer {
+        text-align: center;
+        padding: 1.5rem;
+        color: var(--muted);
+        font-size: 0.78rem;
+        border-top: 1px solid var(--border);
+        margin-top: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <div class="logo-icon">🚬</div>
+        Cigarette Detection
+        <span class="badge">YOLOv12</span>
+      </div>
+      <nav class="header-links">
+        <a href="/docs" target="_blank">API Docs</a>
+        <a href="/health" target="_blank">Health</a>
+        <a href="/model/info" target="_blank">Model Info</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="hero">
+        <h1>Live Detection Demo</h1>
+        <p>
+          Upload an image and detect cigarettes in real-time using a YOLOv12
+          model — right from your browser.
+        </p>
+      </div>
+
+      <div class="container">
+        <!-- ── LEFT: Controls ── -->
+        <div style="display: flex; flex-direction: column; gap: 1.4rem">
+          <!-- Upload -->
+          <div class="card">
+            <p class="card-title">Upload Image</p>
+            <div id="dropzone">
+              <input
+                type="file"
+                id="file-input"
+                accept="image/jpeg,image/png,image/webp,image/bmp"
+              />
+              <div class="drop-icon">🖼️</div>
+              <div class="drop-text">
+                Drag & drop an image here<br />or
+                <span onclick="document.getElementById('file-input').click()"
+                  >browse files</span
+                >
+              </div>
+              <div id="preview-wrap">
+                <img id="preview-img" src="" alt="Preview" />
+                <div class="preview-name" id="preview-name"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Parameters -->
+          <div class="card">
+            <p class="card-title">Detection Parameters</p>
+            <div class="params">
+              <div class="param-row">
+                <label
+                  >Confidence Threshold <span id="conf-val">0.25</span></label
+                >
+                <input
+                  type="range"
+                  id="conf"
+                  min="0.01"
+                  max="1"
+                  step="0.01"
+                  value="0.25"
+                  oninput="
+                    document.getElementById('conf-val').textContent =
+                      parseFloat(this.value).toFixed(2)
+                  "
+                />
+              </div>
+              <div class="param-row">
+                <label
+                  >IoU Threshold (NMS) <span id="iou-val">0.45</span></label
+                >
+                <input
+                  type="range"
+                  id="iou"
+                  min="0.01"
+                  max="1"
+                  step="0.01"
+                  value="0.45"
+                  oninput="
+                    document.getElementById('iou-val').textContent = parseFloat(
+                      this.value,
+                    ).toFixed(2)
+                  "
+                />
+              </div>
+              <div class="param-row">
+                <label>Image Size <span id="imgsz-val">640 px</span></label>
+                <input
+                  type="range"
+                  id="imgsz"
+                  min="32"
+                  max="1920"
+                  step="32"
+                  value="640"
+                  oninput="
+                    document.getElementById('imgsz-val').textContent =
+                      this.value + ' px'
+                  "
+                />
+              </div>
+            </div>
+
+            <div class="toggle-row" style="margin-bottom: 1.3rem">
+              <div>
+                <div>Return Annotated Image</div>
+                <div class="toggle-label-sub">
+                  Overlay bounding boxes on result
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="return-image" checked />
+                <span class="slider-t"></span>
+              </label>
+            </div>
+
+            <button id="run-btn" onclick="runDetection()">
+              <span class="spinner" id="spinner"></span>
+              <span id="btn-text">🔍 Run Detection</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ── RIGHT: Results ── -->
+        <div class="right-panel">
+          <div class="error-box" id="error-box"></div>
+
+          <!-- Stats -->
+          <div class="stats-bar">
+            <div class="stat">
+              <div class="stat-val" id="stat-detections">—</div>
+              <div class="stat-lbl">Detections</div>
+            </div>
+            <div class="stat">
+              <div class="stat-val" id="stat-ms">—</div>
+              <div class="stat-lbl">Inference ms</div>
+            </div>
+            <div class="stat">
+              <div class="stat-val" id="stat-size">—</div>
+              <div class="stat-lbl">Image Size</div>
+            </div>
+          </div>
+
+          <!-- Annotated image -->
+          <div class="card" id="img-card" style="display: none">
+            <p class="card-title">Annotated Result</p>
+            <img id="result-img" src="" alt="Annotated detection result" />
+          </div>
+
+          <!-- Placeholder when no result yet -->
+          <div class="card placeholder" id="placeholder">
+            <div class="placeholder-icon">🔬</div>
+            <div>
+              Upload an image and click <strong>Run Detection</strong> to see
+              results here.
+            </div>
+          </div>
+
+          <!-- Detections table -->
+          <div class="card" id="table-card" style="display: none">
+            <p class="card-title">Detections</p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Label</th>
+                    <th>Class ID</th>
+                    <th>Confidence</th>
+                    <th>BBox (x1,y1,x2,y2)</th>
+                  </tr>
+                </thead>
+                <tbody id="det-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>Cigarette Detection API · YOLOv12 · Built with FastAPI</footer>
+
+    <script>
+      /* ── Dropzone ── */
+      const dropzone = document.getElementById("dropzone");
+      const fileInput = document.getElementById("file-input");
+      const previewWrap = document.getElementById("preview-wrap");
+      const previewImg = document.getElementById("preview-img");
+      const previewName = document.getElementById("preview-name");
+
+      dropzone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropzone.classList.add("drag-over");
+      });
+      dropzone.addEventListener("dragleave", () =>
+        dropzone.classList.remove("drag-over"),
+      );
+      dropzone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropzone.classList.remove("drag-over");
+        const f = e.dataTransfer.files[0];
+        if (f) loadPreview(f);
+      });
+      fileInput.addEventListener("change", () => {
+        if (fileInput.files[0]) loadPreview(fileInput.files[0]);
+      });
+
+      function loadPreview(file) {
+        fileInput._file = file;
+        const url = URL.createObjectURL(file);
+        previewImg.src = url;
+        previewName.textContent = file.name;
+        previewWrap.style.display = "block";
+        document.querySelector(".drop-icon").style.display = "none";
+        document.querySelector(".drop-text").style.display = "none";
+      }
+
+      /* ── Detection ── */
+      async function runDetection() {
+        const file = fileInput._file || fileInput.files[0];
+        if (!file) {
+          showError("Please select an image first.");
+          return;
+        }
+
+        hideError();
+        setLoading(true);
+
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("conf", document.getElementById("conf").value);
+        fd.append("iou", document.getElementById("iou").value);
+        fd.append("imgsz", document.getElementById("imgsz").value);
+        fd.append(
+          "return_image",
+          document.getElementById("return-image").checked,
+        );
+
+        try {
+          const res = await fetch("/detect", { method: "POST", body: fd });
+          const data = await res.json();
+
+          if (!res.ok) {
+            showError(data.detail || "Detection failed.");
+            return;
+          }
+
+          renderResults(data);
+        } catch (err) {
+          showError("Network error: " + err.message);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      function renderResults(data) {
+        // Stats
+        document.getElementById("stat-detections").textContent =
+          data.num_detections;
+        document.getElementById("stat-ms").textContent = data.inference_ms;
+        document.getElementById("stat-size").textContent =
+          `${data.image_width}×${data.image_height}`;
+
+        // Annotated image
+        if (data.annotated_image_b64) {
+          const imgEl = document.getElementById("result-img");
+          imgEl.src = "data:image/png;base64," + data.annotated_image_b64;
+          imgEl.style.display = "block";
+          document.getElementById("img-card").style.display = "block";
+        }
+
+        // Placeholder
+        document.getElementById("placeholder").style.display = "none";
+
+        // Table
+        const tbody = document.getElementById("det-tbody");
+        tbody.innerHTML = "";
+        if (data.detections.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem">No cigarettes detected.</td></tr>';
+        } else {
+          data.detections.forEach((d, i) => {
+            const pct = (d.confidence * 100).toFixed(1);
+            const bbox = d.bbox_xyxy.map((v) => Math.round(v)).join(", ");
+            tbody.innerHTML += `
+          <tr>
+            <td style="color:var(--muted)">${i + 1}</td>
+            <td><span class="pill">${d.label}</span></td>
+            <td>${d.class_id}</td>
+            <td>
+              <div class="conf-bar">
+                <div class="conf-track"><div class="conf-fill" style="width:${pct}%"></div></div>
+                <span style="font-size:.78rem;color:var(--text);min-width:42px">${pct}%</span>
+              </div>
+            </td>
+            <td style="color:var(--muted);font-size:.78rem;font-family:monospace">${bbox}</td>
+          </tr>`;
+          });
+        }
+        document.getElementById("table-card").style.display = "block";
+      }
+
+      function setLoading(on) {
+        document.getElementById("run-btn").disabled = on;
+        document.getElementById("spinner").style.display = on
+          ? "block"
+          : "none";
+        document.getElementById("btn-text").textContent = on
+          ? "Running…"
+          : "🔍 Run Detection";
+      }
+
+      function showError(msg) {
+        const el = document.getElementById("error-box");
+        el.textContent = "⚠️  " + msg;
+        el.style.display = "block";
+      }
+      function hideError() {
+        document.getElementById("error-box").style.display = "none";
+      }
+    </script>
+  </body>
+</html>
