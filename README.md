@@ -1,6 +1,6 @@
 # 🚬 Cigarette Detection – YOLOv12
 
-This project is an upgrade of my original computer vision assignment, using **YOLOv12** for real-time cigarette detection. It includes a **FastAPI inference REST API** and a **browser-based live demo UI** for easy interaction and integration.
+This project is an upgrade of my original computer vision assignment, using **YOLOv12** for real-time cigarette detection. It features a **Streamlit web app** for easy interaction: upload an image, tune detection parameters, and view annotated results instantly in your browser.
 
 ## 📁 Project Structure
 
@@ -8,20 +8,18 @@ This project is an upgrade of my original computer vision assignment, using **YO
 cigarette-detection-yolov12/
 │
 ├── src/                   # Source code
-│   ├── api.py             # FastAPI inference API
-│   ├── schemas.py         # Pydantic request/response models
+│   ├── app.py             # Streamlit web app
 │   ├── main.py            # Standalone inference script
 │   ├── train.py           # Training script
-│   ├── eval.py            # Evaluation script
-│   └── static/
-│       └── index.html     # Browser-based live demo UI
+│   └── eval.py            # Evaluation script
 │
 ├── models/                # Trained models
-│   └── best.pt            # Best performing model
+│   └── best.pt            # Best performing model weights
 │
-├── runs/                  # Training and detection runs
-│   ├── detect/            # Detection outputs
-│   └── mlflow/            # MLflow tracking data
+├── runs/                  # Training and detection output runs
+│
+├── .streamlit/
+│   └── config.toml        # Streamlit theme configuration
 │
 ├── requirements.txt       # Python dependencies
 ├── Dockerfile             # Docker configuration
@@ -30,119 +28,61 @@ cigarette-detection-yolov12/
 └── README.md              # This file
 ```
 
-## 🖥️ Live Demo UI
+## 🖥️ Streamlit Web App
 
-A fully interactive browser-based demo is available at **`http://localhost:8000`**.
+A fully interactive web demo is available at **`http://localhost:8501`** after starting the app.
 
 **Features:**
 
-- 🖼️ Drag & drop image upload with instant preview
-- 🎛️ Live sliders for Confidence, IoU, and Image Size parameters
-- 🔀 Toggle to include/exclude annotated bounding-box image in response
-- 📊 Stats bar showing detection count, inference time, and image dimensions
-- 🖼️ Annotated result image with bounding boxes drawn
-- 📋 Detections table with label, confidence bar, and bbox coordinates
+- 🖼️ Drag & drop image upload (JPEG / PNG / WebP / BMP, up to 20 MB)
+- 🎛️ Sidebar sliders for Confidence threshold, IoU threshold, and Inference image size
+- 📊 At-a-glance metrics — detection count, inference time, image dimensions, top confidence
+- 🖼️ Side-by-side view of the original and annotated image (toggle original on/off)
+- 📋 Per-detection cards with label, confidence, and bounding box coordinates
+- ⬇️ Download the annotated image as PNG
 
-## 🌐 FastAPI Inference API
-
-### Endpoints
-
-| Method | Path          | Description                         |
-| ------ | ------------- | ----------------------------------- |
-| `GET`  | `/`           | Browser live demo UI                |
-| `GET`  | `/health`     | Liveness probe – model readiness    |
-| `GET`  | `/model/info` | Model metadata (task, class names)  |
-| `POST` | `/detect`     | Run cigarette detection on an image |
-| `GET`  | `/docs`       | Interactive Swagger UI              |
-| `GET`  | `/redoc`      | ReDoc API documentation             |
-
-### `/detect` Parameters
-
-| Field          | Type  | Default | Description                                |
-| -------------- | ----- | ------- | ------------------------------------------ |
-| `file`         | file  | —       | Image (JPEG / PNG / WebP / BMP, ≤ 20 MB)   |
-| `conf`         | float | `0.25`  | Confidence threshold (0.01 – 1.0)          |
-| `iou`          | float | `0.45`  | NMS IoU threshold (0.01 – 1.0)             |
-| `imgsz`        | int   | `640`   | Inference image size in pixels (32 – 1920) |
-| `return_image` | bool  | `false` | Return annotated image as base64 PNG       |
-
-### Example Response
-
-```json
-{
-  "filename": "photo.jpg",
-  "image_width": 1280,
-  "image_height": 720,
-  "num_detections": 2,
-  "detections": [
-    {
-      "label": "cigarette",
-      "class_id": 0,
-      "confidence": 0.8731,
-      "bbox_xyxy": [312.4, 201.1, 478.9, 389.6],
-      "bbox_xywhn": [0.3091, 0.4101, 0.1301, 0.2618]
-    }
-  ],
-  "inference_ms": 9.42,
-  "annotated_image_b64": null
-}
-```
-
-### Quick Test with `curl`
-
-```bash
-# Basic detection
-curl -X POST http://localhost:8000/detect \
-  -F "file=@image.png" \
-  -F "conf=0.25"
-
-# With annotated image in response
-curl -X POST http://localhost:8000/detect \
-  -F "file=@image.png" \
-  -F "conf=0.25" \
-  -F "return_image=true"
-```
-
-## 🐳 Docker Setup
+## 🐳 Running with Docker (recommended)
 
 ### Prerequisites
 
-- Docker
-- Docker Compose
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
-### Running the API
+### Start the app
 
 ```bash
-# Build and start the server on port 8000
 docker compose up --build
 ```
 
-Once running, the following URLs are available:
+Then open **http://localhost:8501** in your browser.
 
-| URL                                | Description            |
-| ---------------------------------- | ---------------------- |
-| `http://localhost:8000`            | 🖥️ Live demo UI        |
-| `http://localhost:8000/docs`       | 📄 Swagger UI          |
-| `http://localhost:8000/redoc`      | 📄 ReDoc documentation |
-| `http://localhost:8000/health`     | ❤️ Health check        |
-| `http://localhost:8000/model/info` | ℹ️ Model info          |
+### URL reference
 
-### Docker Configuration
+| URL                            | Description                                              |
+| ------------------------------ | -------------------------------------------------------- |
+| `http://localhost:8501`        | 🖥️ Streamlit web app                                     |
+| `http://172.x.x.x:8501`        | 📡 Docker internal network (container-to-container only) |
+| `http://<your-public-ip>:8501` | 🌍 External access (requires firewall/router port open)  |
 
-- **Base Image:** `ultralytics/ultralytics:latest-cpu`
-- **Platform:** `linux/amd64`
-- **Port:** `8000`
-- **Working Directory:** `/usr/src/app`
-- **Health Check:** `GET /health` every 30 s
+### Docker configuration
 
-## 🚀 Local Development (without Docker)
+| Setting          | Value                                |
+| ---------------- | ------------------------------------ |
+| **Base image**   | `ultralytics/ultralytics:latest-cpu` |
+| **Platform**     | `linux/amd64`                        |
+| **Exposed port** | `8501`                               |
+| **Health check** | `GET /_stcore/health` every 30 s     |
+
+## 🚀 Running Locally (without Docker)
 
 ```bash
+# Install dependencies into your virtual environment
 pip install -r requirements.txt
 
-# Run the API
-PYTHONPATH=. uvicorn src.api:app --reload --host 0.0.0.0 --port 8000
+# Launch the Streamlit app
+streamlit run src/app.py --server.port 8501
 ```
+
+Then open **http://localhost:8501** in your browser.
 
 ## 📊 Performance
 
@@ -161,4 +101,5 @@ PYTHONPATH=. uvicorn src.api:app --reload --host 0.0.0.0 --port 8000
 | **Recall**    | **0.614** |
 
 ## ❤️ Acknowledgements
+
 I would like to thank my former teammates who contributed to my earlier Computer Vision projects during my Bachelor's journey. Your collaboration, discussions, and support helped lay the foundation for this work.
