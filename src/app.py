@@ -15,9 +15,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger("cigarette-streamlit")
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.dirname(BASE_DIR)
-MODEL_PATH = os.path.join(ROOT_DIR, "models", "best.pt")
+base_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.dirname(base_dir)
+model_path = os.path.join(root_dir, "models", "best.pt")
 st.set_page_config(
     page_title="Cigarette Detection",
     page_icon="🚬",
@@ -98,7 +98,7 @@ st.markdown(
     .hero h1 {
         font-size: 2.3rem;
         font-weight: 700;
-        color: #ffffff;
+        color: #e6e6e6;
         margin-bottom: 0.35rem;
         letter-spacing: -0.02em;
     }
@@ -152,8 +152,8 @@ st.markdown(
 
 @st.cache_resource(show_spinner="Loading YOLOv12 model …")
 def load_model():
-    logger.info("Loading model from %s", MODEL_PATH)
-    model = YOLO(MODEL_PATH)
+    logger.info("Loading model from %s", model_path)
+    model = YOLO(model_path)
     logger.info("Model loaded.")
     return model
 
@@ -169,12 +169,10 @@ def run_inference(model, img_bgr, conf, iou, imgsz):
     elapsed_ms = (time.perf_counter() - t0) * 1000
     return results[0], elapsed_ms
 
-
 def annotated_pil(result):
     ann_bgr = result.plot()
     ann_rgb = cv2.cvtColor(ann_bgr, cv2.COLOR_BGR2RGB)
     return Image.fromarray(ann_rgb)
-
 
 def pil_from_upload(upload) -> tuple:
     pil_img = Image.open(upload).convert("RGB")
@@ -222,7 +220,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("### 📦 Model Info")
     model = load_model()
-    st.caption(f"**Path:** `{MODEL_PATH}`")
+    st.caption(f"**Path:** `{model_path}`")
     st.caption(f"**Task:** `{model.task}`")
     st.caption(f"**Classes:** {', '.join(model.names.values())}")
 
