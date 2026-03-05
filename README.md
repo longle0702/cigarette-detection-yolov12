@@ -159,3 +159,6 @@ PYTHONPATH=. uvicorn src.api:app --reload --host 0.0.0.0 --port 8000
 | **mAP50**     | **0.59**  |
 | **Precision** | **0.675** |
 | **Recall**    | **0.614** |
+
+## ❤️ Acknowledgements
+I would like to thank my former teammates who contributed to my earlier Computer Vision projects during my Bachelor's journey. Your collaboration, discussions, and support helped lay the foundation for this work.
