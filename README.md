@@ -18,14 +18,14 @@ cigarette-detection-yolov12/
 │
 ├── runs/                  # Training and detection output runs
 │
-├── .streamlit/
-│   └── config.toml        # Streamlit theme configuration
+├── .streamlit/            # Streamlit configuration
+│   └── config.toml        # UI theme and server settings
 │
 ├── requirements.txt       # Python dependencies
 ├── Dockerfile             # Docker configuration
 ├── docker-compose.yml     # Docker Compose configuration
 ├── image.png              # Sample image
-└── README.md              # This file
+└── README.md              # Project documentation
 ```
 
 ## 🖥️ Streamlit Web App
