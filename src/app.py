@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 MODEL_PATH = os.path.join(ROOT_DIR, "models", "best.pt")
 st.set_page_config(
-    page_title="🚬 Cigarette Detection",
+    page_title="Cigarette Detection",
     page_icon="🚬",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -33,109 +33,118 @@ st.markdown(
         font-family: 'Inter', sans-serif;
     }
 
-    /* Sidebar */
-    section[data-testid="stSidebar"] {
-        background: #0d0d0d;
-        border-right: 1px solid #222;
-    }
-
-    /* Main background */
+    /* ===== Global Background ===== */
     .stApp {
-        background: #0a0a0a;
-        color: #f0f0f0;
+        background: #0b0b0d;
+        color: #ffffff;
     }
 
-    /* Cards */
-    .result-card {
-        background: #141414;
-        border: 1px solid #2a2a2a;
+    /* ===== Sidebar ===== */
+    section[data-testid="stSidebar"] {
+        background: #08080a;
+        border-right: 1px solid #1f1f22;
+    }
+
+    /* ===== Cards ===== */
+    .result-card,
+    .metric-tile {
+        background: linear-gradient(145deg, #0b0b0d, #111113);
+        border: 1px solid #2a2a2d;
         border-radius: 10px;
         padding: 1.2rem 1.4rem;
         margin-bottom: 0.8rem;
     }
 
-    /* Detection badge */
+    /* ===== Metric Tiles Text ===== */
+    .metric-tile {
+        text-align: center;
+    }
+
+    .metric-tile h2 {
+        font-size: 1.9rem;
+        font-weight: 700;
+        margin: 0;
+        color: #ffb347;
+    }
+
+    .metric-tile p {
+        margin: 0.35rem 0 0;
+        font-size: 0.75rem;
+        color: #9a9a9a;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    /* ===== Badge ===== */
     .badge {
         display: inline-block;
-        background: #222;
-        border: 1px solid #3a3a3a;
-        color: #d0d0d0;
+        background: rgba(255, 179, 71, 0.12);
+        border: 1px solid rgba(255, 179, 71, 0.35);
+        color: #ffb347;
         padding: 3px 12px;
-        border-radius: 20px;
-        font-size: 0.76rem;
+        border-radius: 18px;
+        font-size: 0.75rem;
         font-weight: 600;
         letter-spacing: 0.04em;
         margin: 2px;
     }
 
-    /* Metric tiles */
-    .metric-tile {
-        background: #111;
-        border: 1px solid #2a2a2a;
-        border-radius: 10px;
-        padding: 1rem 1.1rem;
-        text-align: center;
-    }
-    .metric-tile h2 {
-        font-size: 1.9rem;
-        font-weight: 700;
-        margin: 0;
-        color: #ffffff;
-    }
-    .metric-tile p {
-        margin: 0.3rem 0 0;
-        font-size: 0.75rem;
-        color: #555;
-        text-transform: uppercase;
-        letter-spacing: 0.09em;
-    }
-
-    /* Hero header */
+    /* ===== Hero Section ===== */
     .hero {
         text-align: center;
         padding: 2rem 1rem 1.2rem;
     }
+
     .hero h1 {
         font-size: 2.3rem;
         font-weight: 700;
         color: #ffffff;
-        margin-bottom: 0.3rem;
+        margin-bottom: 0.35rem;
         letter-spacing: -0.02em;
     }
+
     .hero h1 span {
-        color: #aaaaaa;
+        color: #e6e6e6;
     }
+
     .hero p {
-        color: #555;
+        color: #9a9a9a;
         font-size: 0.95rem;
     }
 
-    /* Upload zone */
+    /* ===== Upload Zone ===== */
     [data-testid="stFileUploader"] {
-        background: #111;
-        border: 2px dashed #2e2e2e;
+        background: #0f0f12;
+        border: 2px dashed #2d2d32;
         border-radius: 10px;
-        padding: 0.8rem;
+        padding: 0.9rem;
     }
 
-    /* Buttons */
-    .stButton > button, [data-testid="stDownloadButton"] button {
-        background: #1e1e1e;
-        color: #f0f0f0;
-        border: 1px solid #333;
+    /* ===== Buttons ===== */
+    .stButton > button,
+    [data-testid="stDownloadButton"] button {
+        background: #111113;
+        color: #ffffff;
+        border: 1px solid #2f2f33;
         border-radius: 8px;
         padding: 0.5rem 1.3rem;
         font-weight: 600;
         font-size: 0.88rem;
-        transition: background 0.15s, border-color 0.15s;
-    }
-    .stButton > button:hover, [data-testid="stDownloadButton"] button:hover {
-        background: #2a2a2a;
-        border-color: #555;
+        transition: all 0.18s ease;
     }
 
-    /* Divider */
-    hr { border-color: #1e1e1e; }
+    .stButton > button:hover,
+    [data-testid="stDownloadButton"] button:hover {
+        background: #ffb347;
+        border-color: #ffb347;
+        color: #000000;
+    }
+
+    /* ===== Divider ===== */
+    hr {
+        border-color: #1f1f22;
+    }
+
     </style>
     """,
     unsafe_allow_html=True,
