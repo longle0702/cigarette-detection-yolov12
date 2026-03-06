@@ -181,19 +181,6 @@ if uploaded is not None:
         st.image(ann_pil, use_container_width=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    _, _, btn_col = st.columns([1, 1, 1])
-    with btn_col:
-        buf = _io.BytesIO()
-        ann_pil.save(buf, format="PNG")
-        st.download_button(
-            label="Download annotated image",
-            data=buf.getvalue(),
-            file_name=f"annotated_{uploaded.name.rsplit('.', 1)[0]}.png",
-            mime="image/png",
-            use_container_width=True
-        )
-
-    st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("### Detections")
     if not detections:
         st.info("No cigarettes detected.")
