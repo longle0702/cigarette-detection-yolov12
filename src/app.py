@@ -125,10 +125,10 @@ def pil_from_upload(upload) -> tuple:
     bgr = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
     return pil_img, bgr
 
-st.markdown('<div class="hero"><h1>🚬 <span>Cigarette</span> Detection</h1><p>Real-time detection powered by YOLOv12</p></div>', unsafe_allow_html=True)
+st.markdown('<div class="hero"><h1>Cigarette Detection</h1><p>Real-time detection powered by YOLOv12</p></div>', unsafe_allow_html=True)
 
 with st.sidebar:
-    st.markdown("## ⚙️ Inference Settings")
+    st.markdown("## Inference Settings")
     st.markdown("---")
     conf_thresh = st.slider("Confidence threshold", 0.01, 1.0, 0.15, 0.01, help="Minimum confidence score for valid detections")
     iou_thresh = st.slider("IoU threshold (NMS)", 0.01, 1.0, 0.45, 0.01, help="Controls overlap removal in NMS")
@@ -186,7 +186,7 @@ if uploaded is not None:
         buf = _io.BytesIO()
         ann_pil.save(buf, format="PNG")
         st.download_button(
-            label="⬇️ Download annotated image",
+            label="Download annotated image",
             data=buf.getvalue(),
             file_name=f"annotated_{uploaded.name.rsplit('.', 1)[0]}.png",
             mime="image/png",
@@ -194,7 +194,7 @@ if uploaded is not None:
         )
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("### 🎯 Detections")
+    st.markdown("### Detections")
     if not detections:
         st.info("No cigarettes detected.")
     else:
